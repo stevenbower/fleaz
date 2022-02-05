@@ -1,0 +1,14 @@
+
+Artificial Economic Life : a Simple Model of a Stockmarket
+	R.G. Palmer, W. Brian Arthur, John H. Holland,
+	Blake LeBaron, Paul Tayler Dec 98
+
+	Using simple established economic models for determining stock
+	value based on supply/demand, evolved agents who buy/sell their
+	stocks based on varioud constraints specified by a string.
+	These strings are bred, descisions made based on stock market
+	state string (genotype is schema (0,1,*) mask for this state
+	string).
+
+	Stock market modeling emerged, did not equilize (chaotic) and exhibited
+	all major features of markets in 'real' world.

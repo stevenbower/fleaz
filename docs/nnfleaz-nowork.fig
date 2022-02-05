@@ -1,0 +1,42 @@
+#FIG 3.2
+Landscape
+Center
+Inches
+Letter  
+100.00
+Single
+-2
+1200 2
+6 600 12225 9975 12525
+6 600 12225 9975 12525
+2 1 0 1 0 0 100 0 20 0.000 0 0 -1 0 0 2
+	 600 12225 9600 12225
+4 0 0 100 0 16 12 0.0000 4 165 4755 5175 12450 Steven Bower, Peter Vetere, Matthew J Weaver     1999\001
+4 0 0 100 0 16 12 0.0000 4 135 465 600 12450 Fleaz\001
+-6
+-6
+4 0 0 100 0 0 22 0.0000 4 300 3510 5700 3225 "; adding components from\001
+4 0 0 100 0 16 28 0.0000 4 315 6765 2025 525 Neural Network Trials & Tribulations\001
+4 0 0 100 0 16 28 0.0000 4 405 9195 675 1875 1.  Crossover every-other-neuron/network layers\001
+4 0 0 100 0 16 28 0.0000 4 405 9285 675 4650 2.  Crossover & mutate random weights in network\001
+4 0 0 100 0 16 28 0.0000 4 315 8895 675 7575 3.  Fitness based on location of food in 5x5 view \001
+4 0 0 100 0 16 22 0.0000 4 315 1095 1200 2325 Theory:\001
+4 0 0 100 0 16 22 0.0000 4 240 1320 1200 3225 Problem:\001
+4 0 0 100 0 16 22 0.0000 4 315 1095 1200 5100 Theory:\001
+4 0 0 100 0 16 22 0.0000 4 240 1320 1200 6150 Problem:\001
+4 0 0 100 0 16 22 0.0000 4 315 1095 1200 8025 Theory:\001
+4 0 0 100 0 16 22 0.0000 4 240 1320 1200 8925 Problem:\001
+4 0 0 100 0 16 22 0.0000 4 315 3510 3225 1050 (Things that didn't work)\001
+4 0 0 100 0 16 22 0.0000 4 315 6840 2625 2325 Retain same general connections to each node;\001
+4 0 0 100 0 16 22 0.0000 4 240 4260 2625 2700 best connections will be bred.\001
+4 0 0 100 0 16 22 0.0000 4 240 3375 2625 3225 The network is a "whole\001
+4 0 0 100 0 16 22 0.0000 4 315 6615 2625 3600 other networks invalidates the current weights.\001
+4 0 0 100 0 16 22 0.0000 4 315 6360 2625 5175 Start with completely random network, keep\001
+4 0 0 100 0 16 22 0.0000 4 315 6360 2625 5550 changing weights until best network evolves.\001
+4 0 0 100 0 16 22 0.0000 4 315 7200 2625 6150 Changing weights randomly does little; reduces to\001
+4 0 0 100 0 16 22 0.0000 4 240 1065 2625 6525 number\001
+4 0 0 100 0 16 22 0.0000 4 315 5355 3825 6525 search.  Takes forever, gets nowhere.\001
+4 0 0 100 0 16 22 0.0000 4 315 5415 2625 8400 "visual" conception of its environment.\001
+4 0 0 100 0 16 22 0.0000 4 315 6525 2625 8025 Flea will learn how to get to food based on a\001
+4 0 0 100 0 16 22 0.0000 4 315 6360 2625 8925 Maps with little/much food cause ambiguity.\001
+4 0 0 100 0 16 22 0.0000 4 315 2415 2625 9300 Learning is slow.\001

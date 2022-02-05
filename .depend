@@ -1,0 +1,32 @@
+FleaNN.o: FleaNN.C FleaNN.h fleaz.h Flea.h ElmanNet.h InfoRepository.h
+RingMaster.o: RingMaster.C RingMaster.h fleaz.h Flea.h Population.h \
+ rend_NULL.h renderer.h map.h mapNode.h rend_TEXT.h rend_SVGA.h \
+ rend_SVGAFILE.h
+DataFile.o: DataFile.C DataFile.h Population.h fleaz.h Flea.h FleaFSM.h \
+ FleaGP.h FleaNN.h ElmanNet.h InfoRepository.h FleaRANDOM.h
+Options.o: Options.C fleaz.h
+map.o: map.C map.h fleaz.h mapNode.h renderer.h Population.h Flea.h
+FleaFSM.o: FleaFSM.C FleaFSM.h fleaz.h Flea.h
+utils.o: utils.C fleaz.h
+mapNode.o: mapNode.C mapNode.h fleaz.h
+Midwife.o: Midwife.C Midwife.h Population.h fleaz.h Flea.h
+InfoRepository.o: InfoRepository.C InfoRepository.h fleaz.h
+FleaGP.o: FleaGP.C FleaGP.h fleaz.h Flea.h
+rend_TEXT.o: rend_TEXT.C rend_TEXT.h renderer.h fleaz.h map.h mapNode.h \
+ Population.h Flea.h
+renderer.o: renderer.C renderer.h fleaz.h map.h mapNode.h Population.h \
+ Flea.h
+rend_SVGAFILE.o: rend_SVGAFILE.C rend_SVGAFILE.h renderer.h fleaz.h map.h \
+ mapNode.h Population.h Flea.h rend_SVGA.h
+ElmanNet.o: ElmanNet.C ElmanNet.h fleaz.h
+main.o: main.C fleaz.h renderer.h map.h mapNode.h Population.h Flea.h \
+ rend_TEXT.h rend_SVGA.h rend_SVGAFILE.h rend_NULL.h RingMaster.h \
+ DataFile.h Midwife.h
+Flea.o: Flea.C Flea.h fleaz.h
+rend_SVGA.o: rend_SVGA.C rend_SVGA.h renderer.h fleaz.h map.h mapNode.h \
+ Population.h Flea.h
+rend_NULL.o: rend_NULL.C rend_NULL.h renderer.h fleaz.h map.h mapNode.h \
+ Population.h Flea.h
+Population.o: Population.C Population.h fleaz.h Flea.h FleaFSM.h FleaGP.h \
+ FleaNN.h ElmanNet.h InfoRepository.h FleaRANDOM.h
+FleaRANDOM.o: FleaRANDOM.C FleaRANDOM.h Flea.h fleaz.h
