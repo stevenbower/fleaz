@@ -202,6 +202,14 @@ button.primary:hover { background: #1a1408; color: #e8b84a; }
 
 input[type="range"] { width: 116px; accent-color: var(--gold); }
 
+.speed output {
+  min-width: 8ch;
+  text-align: right;
+  font: 400 11px/1 var(--mono);
+  font-variant-numeric: tabular-nums;
+  color: var(--ink-dim);
+}
+
 /* ---- readouts ----------------------------------------------------------- */
 
 .readout {

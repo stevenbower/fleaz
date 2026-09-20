@@ -36,6 +36,18 @@ Scaling the VGA view on a whole number matters. At a fractional scale the
 6-pixel arrow strokes land on uneven pixel boundaries and the distance field
 turns to grey mush.
 
+The modern view adds trails: each flea drags a fading path behind it, about
+thirty ticks long. Rather than decaying a buffer every tick, each visited cell
+records the tick it was stamped on and which species stamped it, and opacity is
+derived at draw time — one write per living flea per tick instead of thousands
+of multiplies, which matters at three thousand ticks a second. Fading is
+measured in ticks, so a path looks the same at any speed. Classic VGA has no
+trails, because the original had none.
+
+Speed is a rate in ticks per second, logarithmic from one tick every two
+seconds up to 3000/s, and ticks are driven off elapsed time rather than frames
+so the number on the slider is honest.
+
 Bugs that shaped the results were kept and labelled `QUIRK` in the source:
 
 - **GP fleaz never mutate.** `FleaGP::mutate(int rate)` takes an argument, so it

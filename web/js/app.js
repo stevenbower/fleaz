@@ -18,9 +18,21 @@
   const chart = new FitnessChart($('#chart'));
   const chartStyle = { dim: '#79838f', grid: '#1a2029', mono: '"IBM Plex Mono", monospace' };
 
+  const trails = new Trails();
+
   let run = null;
   let playing = true;
-  let speed = 6;
+
+  /* Speed is a rate in ticks per second, mapped logarithmically off the
+   * slider so the slow end is usable. At the bottom it is one tick every two
+   * seconds -- slow enough to watch a single flea decide -- and at the top it
+   * is fast enough to burn through generations. Ticks are driven off elapsed
+   * time rather than frames, so the number on the slider is honest. */
+  const TPS_MIN = 0.5, TPS_MAX = 3000;
+  const MAX_BURST = 4000;          /* ticks per frame, so a stall can't freeze the tab */
+  const tpsFor = (v) => TPS_MIN * Math.pow(TPS_MAX / TPS_MIN, v / 100);
+  let tps = tpsFor(62);
+  let tickAcc = 0, lastTs = 0;
   let selected = 'fsm';
   let lastGenSeen = -1;
 
@@ -63,8 +75,10 @@
 
     const budget = 400000;
     for (let i = 0; i < budget && run.generation < WARM_GENERATIONS; i++) run.tick();
+    trails.step(run.tournament);
 
     lastGenSeen = -1;
+    tickAcc = 0;
     if (boardView.reset) boardView.reset();
     renderAll();
   }
@@ -75,17 +89,23 @@
     $('#play').setAttribute('aria-pressed', String(playing));
   });
 
+  function stepOnce() {
+    run.tick();
+    trails.step(run.tournament);
+  }
+
   $('#step').addEventListener('click', () => {
     playing = false;
     $('#play').textContent = 'Play';
-    run.tick();
+    $('#play').setAttribute('aria-pressed', 'false');
+    stepOnce();
     renderAll();
   });
 
   $('#skip').addEventListener('click', () => {
     const target = run.generation + 1;
     const budget = 200000;
-    for (let i = 0; i < budget && run.generation < target; i++) run.tick();
+    for (let i = 0; i < budget && run.generation < target; i++) stepOnce();
     renderAll();
   });
 
@@ -107,7 +127,16 @@
     renderAll();
   });
 
-  $('#speed').addEventListener('input', (e) => { speed = parseInt(e.target.value, 10); });
+  function showSpeed() {
+    $('#speed-val').textContent = tps >= 10 ? `${Math.round(tps)}/s`
+      : tps >= 1 ? `${tps.toFixed(1)}/s`
+      : `1 per ${(1 / tps).toFixed(1)}s`;
+  }
+
+  $('#speed').addEventListener('input', (e) => {
+    tps = tpsFor(parseInt(e.target.value, 10));
+    showSpeed();
+  });
   $('#f-gpmut').addEventListener('change', () => { tweaks.gpMutates = $('#f-gpmut').checked; });
 
   /* ---- species tabs ---- */
@@ -232,7 +261,8 @@
 
   function renderAll() {
     const t = run.tournament;
-    boardView.draw(t ? t.board : null, t ? t.pop.v : null, t ? t.loc : null);
+    boardView.draw(t ? t.board : null, t ? t.pop.v : null, t ? t.loc : null,
+                   trails, t ? t.curCycle : 0);
     renderReadout();
     if (run.generation !== lastGenSeen) {
       lastGenSeen = run.generation;
@@ -244,10 +274,16 @@
 
   /* ---- main loop ---- */
 
-  function frame() {
+  function frame(ts) {
     if (playing && run) {
-      for (let i = 0; i < speed; i++) run.tick();
+      const dt = lastTs ? Math.min((ts - lastTs) / 1000, 0.25) : 0;
+      tickAcc = Math.min(tickAcc + tps * dt, MAX_BURST);
+      let n = 0;
+      while (tickAcc >= 1 && n < MAX_BURST) { stepOnce(); tickAcc -= 1; n++; }
+    } else {
+      tickAcc = 0;
     }
+    lastTs = ts;
     if (run) renderAll();
     requestAnimationFrame(frame);
   }
@@ -260,6 +296,7 @@
     }, 120);
   });
 
+  showSpeed();
   restart(DEFAULT_OPTS);
   requestAnimationFrame(frame);
 })();

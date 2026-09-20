@@ -45,6 +45,46 @@ function availWidth(cvs, fallback) {
   return (cvs.parentElement && cvs.parentElement.clientWidth) || fallback;
 }
 
+/* ---- trails -------------------------------------------------------------
+ *
+ * Where each flea has been, fading out behind it. Rather than decaying a
+ * buffer every tick -- which would cost thousands of multiplies per tick and
+ * bite hard at 3000 ticks a second -- each visited cell just records the tick
+ * it was stamped on and which species did the stamping. Age, and so opacity,
+ * is worked out at draw time. Stamping costs one write per living flea.
+ *
+ * Fading is measured in ticks, not frames, so a path looks the same whether
+ * you are watching one tick a second or three thousand.
+ */
+
+const TRAIL_LIFE = 32;      /* ticks before a trail is gone */
+
+class Trails {
+  constructor() { this.owner = null; }
+
+  /* Called once per simulation tick, after the tick has been applied. */
+  step(t) {
+    if (!t) { this.owner = null; return; }
+    const cells = t.board.dimX * t.board.dimY;
+    if (this.owner !== t || !this.tick || this.tick.length !== cells) {
+      this.owner = t;
+      this.dimX = t.board.dimX;
+      this.tick = new Int32Array(cells).fill(-TRAIL_LIFE * 4);
+      this.species = new Uint8Array(cells);
+    }
+    const pop = t.pop.v, loc = t.loc, now = t.curCycle;
+    for (let i = 0; i < pop.length; i++) {
+      const f = pop[i];
+      if (!f.soul.alive) continue;
+      const c = loc[i].y * this.dimX + loc[i].x;
+      this.tick[c] = now;
+      this.species[c] = f.type;
+    }
+  }
+
+  matches(t) { return this.owner === t && this.tick; }
+}
+
 /* ====================================================== modern board view */
 
 const MODERN = {
@@ -66,11 +106,12 @@ class ModernBoardView {
     this.paths = [];
     this.heads = [];
     this.cells = [];
+    this.trailCells = [];
   }
 
   reset() {}
 
-  draw(board, pop, loc) {
+  draw(board, pop, loc, trails, nowTick) {
     if (!board) return;
     const { dimX, dimY, type, dirNearest, idxNearest, dist, foodCount } = board;
 
@@ -148,6 +189,33 @@ class ModernBoardView {
         ctx.fillStyle = `rgba(${fr},${fg},${fb},${(0.10 + 0.55 * t).toFixed(3)})`;
         ctx.fill(this.heads[b]);
       }
+    }
+
+    /* Trails, under everything else: the recent past of each flea. */
+    if (trails && trails.tick && trails.tick.length === dimX * dimY) {
+      const now = nowTick;
+      const TB = 5;
+      for (let b = 0; b < TB; b++) this.trailCells[b] = (this.trailCells[b] || []), this.trailCells[b].length = 0;
+      for (let c = 0; c < trails.tick.length; c++) {
+        const age = now - trails.tick[c];
+        if (age < 0 || age >= TRAIL_LIFE) continue;
+        const t = 1 - age / TRAIL_LIFE;
+        const b = Math.min(TB - 1, Math.floor(t * TB));
+        this.trailCells[b].push(c, trails.species[c]);
+      }
+      const inset = cell * 0.31, sz = cell - inset * 2;
+      for (let b = 0; b < TB; b++) {
+        const list = this.trailCells[b];
+        if (!list.length) continue;
+        const t = (b + 0.5) / TB;
+        ctx.globalAlpha = 0.07 + 0.38 * t * t;
+        for (let i = 0; i < list.length; i += 2) {
+          const c = list[i];
+          ctx.fillStyle = SPECIES[list[i + 1]].color;
+          ctx.fillRect((c % dimX) * cell + inset, Math.floor(c / dimX) * cell + inset, sz, sz);
+        }
+      }
+      ctx.globalAlpha = 1;
     }
 
     /* Food, then fleaz, each with a soft bloom so they sit above the field. */

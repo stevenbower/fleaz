@@ -44,8 +44,10 @@
         <button id="reseed">New seed</button>
         <button id="view" aria-pressed="false" title="Switch between the modern view and a pixel-faithful port of rend_SVGA.C">Classic VGA</button>
         <div class="speed">
-          <label for="speed">ticks / frame</label>
-          <input type="range" id="speed" min="1" max="40" value="6">
+          <label for="speed">speed</label>
+          <input type="range" id="speed" min="0" max="100" value="62"
+                 aria-describedby="speed-val">
+          <output id="speed-val" for="speed">110/s</output>
         </div>
       </div>
 
@@ -65,8 +67,10 @@
              nearest surviving pellet, drawn here as a stroke, and brightens as
              that pellet gets closer &mdash; so the basins you see are the paths
              a flea is being pointed along. Coloured dots are fleaz.
-             <b>Classic VGA</b> redraws the same data as the 1999 program did,
-             in 6-pixel cells with hand-plotted arrows.</p>
+             Each one drags a short trail behind it that fades over about
+             thirty ticks, so you can see the path it took. <b>Classic VGA</b>
+             redraws the same data as the 1999 program did, in 6-pixel cells
+             with hand-plotted arrows and no trails.</p>
           <p>Each flea sees a 5&times;5 window &mdash; food, other fleaz, and the
              arrows underneath them &mdash; and picks one action per tick: sit,
              move in one of eight directions, attack, or eat. Every
