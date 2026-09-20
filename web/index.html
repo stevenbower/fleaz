@@ -1,0 +1,149 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Fleaz</title>
+<meta name="description" content="A 1999 artificial-life tournament — finite state machines, genetic programs and neural nets competing for food — ported from C++ and svgalib to the browser.">
+<link rel="icon" href="assets/flea.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans+Condensed:wght@500;600&family=IBM+Plex+Sans:wght@400;500&display=swap">
+<link rel="stylesheet" href="fleaz.css">
+</head>
+<body>
+<div class="shell">
+
+  <header class="masthead">
+    <div class="wordmark">
+      <img src="assets/flea.png" width="300" height="107"
+           alt="The Fleaz wordmark, hand-drawn in 1999">
+      <p>Four kinds of mind, one grid, not enough food. Evolved over generations,
+         exactly as the 1999 program ran it.</p>
+    </div>
+    <p class="colophon">
+      <b>fleaz</b> &mdash; steve, pete, matt<br>
+      C++ / svgalib / CVS, Apr&ndash;May 1999<br>
+      ported to canvas, no dependencies
+    </p>
+  </header>
+
+  <main class="console">
+
+    <section class="stage">
+      <div class="board-frame">
+        <canvas id="board" width="301" height="301"
+                aria-label="The tournament board"></canvas>
+      </div>
+
+      <div class="transport">
+        <button id="play" class="primary" aria-pressed="true">Pause</button>
+        <button id="step">Step</button>
+        <button id="skip" title="Run until the next generation is bred">Finish gen</button>
+        <button id="restart">Restart</button>
+        <button id="reseed">New seed</button>
+        <button id="view" aria-pressed="false" title="Switch between the modern view and a pixel-faithful port of rend_SVGA.C">Classic VGA</button>
+        <div class="speed">
+          <label for="speed">ticks / frame</label>
+          <input type="range" id="speed" min="1" max="40" value="6">
+        </div>
+      </div>
+
+      <dl class="readout">
+        <div><dt>generation</dt><dd id="r-gen">0</dd></div>
+        <div><dt>tournament</dt><dd id="r-tourn">0/0</dd></div>
+        <div><dt>tick</dt><dd id="r-tick">0</dd></div>
+        <div><dt>alive</dt><dd id="r-alive">0</dd></div>
+        <div><dt>food left</dt><dd id="r-food">0</dd></div>
+      </dl>
+
+      <div class="panel notes">
+        <h2>What you are looking at</h2>
+        <div class="panel-body">
+          <p>Gold dots are food. The blue field behind them is the map's
+             distance field: every empty square knows the direction of its
+             nearest surviving pellet, drawn here as a stroke, and brightens as
+             that pellet gets closer &mdash; so the basins you see are the paths
+             a flea is being pointed along. Coloured dots are fleaz.
+             <b>Classic VGA</b> redraws the same data as the 1999 program did,
+             in 6-pixel cells with hand-plotted arrows.</p>
+          <p>Each flea sees a 5&times;5 window &mdash; food, other fleaz, and the
+             arrows underneath them &mdash; and picks one action per tick: sit,
+             move in one of eight directions, attack, or eat. Every
+             <code>breathFreq</code> ticks it respirates and spends one unit of
+             food. At zero it starves. A tournament ends when the last flea dies.</p>
+          <p>Then the <b>Midwife</b> takes each species, kills the least fit half,
+             pairs the survivors at random, and returns both parents plus two
+             children. <b>RANDOM</b> never breeds &mdash; it is the control group,
+             and the number to beat.</p>
+        </div>
+      </div>
+    </section>
+
+    <aside class="rail">
+
+      <section class="panel">
+        <h2>Leaders <span id="leader-count"></span></h2>
+        <div id="tabs" class="species-tabs" role="tablist"></div>
+        <div id="leaders"></div>
+        <pre id="specimen" class="specimen"></pre>
+      </section>
+
+      <section class="panel">
+        <h2>Best fitness <span>log scale</span></h2>
+        <canvas id="chart" aria-label="Best fitness per species, by generation"></canvas>
+        <div id="legend" class="legend"></div>
+      </section>
+
+      <section class="panel">
+        <h2>Log <span>fleaz.log</span></h2>
+        <pre id="log" class="log"></pre>
+      </section>
+
+      <section class="panel">
+        <h2>Options <span>Options.C</span></h2>
+        <div class="panel-body">
+          <div class="fields">
+            <div class="field"><label for="f-boardx">board x</label><input id="f-boardx" type="number" min="8" max="160" value="50"></div>
+            <div class="field"><label for="f-boardy">board y</label><input id="f-boardy" type="number" min="8" max="160" value="50"></div>
+            <div class="field"><label for="f-food">food</label><input id="f-food" type="number" min="1" value="25"></div>
+            <div class="field"><label for="f-feed">feed</label><input id="f-feed" type="number" min="1" value="5"></div>
+            <div class="field"><label for="f-breath">bfreq</label><input id="f-breath" type="number" min="1" value="15"></div>
+            <div class="field"><label for="f-tourn">tsize</label><input id="f-tourn" type="number" min="4" value="100"></div>
+            <div class="field"><label for="f-fsm">fsm</label><input id="f-fsm" type="number" min="0" value="100"></div>
+            <div class="field"><label for="f-gp">gp</label><input id="f-gp" type="number" min="0" value="100"></div>
+            <div class="field"><label for="f-nn">nn</label><input id="f-nn" type="number" min="0" value="100"></div>
+            <div class="field"><label for="f-random">random</label><input id="f-random" type="number" min="0" value="100"></div>
+            <div class="field"><label for="f-seed">seed</label><input id="f-seed" type="number" min="0" value="1999"></div>
+          </div>
+
+          <label class="check">
+            <input type="checkbox" id="f-gpmut">
+            <span>Let GP fleaz mutate. In the original they never did &mdash;
+                  <code>FleaGP::mutate(int)</code> took an argument, so it never
+                  overrode the base class and the Midwife always called the empty
+                  one. Turning this on restores what was clearly intended.</span>
+          </label>
+        </div>
+      </section>
+
+    </aside>
+  </main>
+
+  <footer class="foot">
+    <span>Species counts are rounded up to a multiple of four, the way
+          <b>Options.C</b> did, so the Midwife's arithmetic comes out even.</span>
+    <span>Options apply on Restart.</span>
+  </footer>
+
+</div>
+
+<script src="js/core.js"></script>
+<script src="js/world.js"></script>
+<script src="js/elman.js"></script>
+<script src="js/fleas.js"></script>
+<script src="js/sim.js"></script>
+<script src="js/render.js"></script>
+<script src="js/app.js"></script>
+</body>
+</html>
